@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+        <meta name="title" content="Tyler">
+        <meta name="description" content="A tiny library for generating interactive maps in the browser.">
+        <meta property="og:site_name" content="Tyler">
+        <meta property="og:title" content="Tyler">
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.josemi.xyz/tyler"" />
+        <meta property="og:image" content="https://www.josemi.xyz/codecake/header.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Tyler" />
+        <meta property="description" content="A tiny library for generating interactive maps in the browser." />
+        <title>Tyler: tiny JavaScript library for interactive maps.</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;700&display=swap">
+        <link rel="stylesheet" href="./node_modules/lowcss/dist/low.css">
+        <link rel="stylesheet" href="./node_modules/codecake/codecake.css">
+        <link rel="stylesheet" href="./tyler.css">
+    </head>
+    <body class="m-0 font-lato text-base leading-normal text-gray-900">
+        <!-- Editor example -->
+        <div class="main w-full max-w-4xl mx-auto px-6">
+            <!-- Header section -->
+            <div class="w-full mt-4 md:mt-12 mb-6">
+                <div class="flex justify-between items-center w-full">
+                    <div class="text-xl md:text-2xl font-bold font-plex-serif tracking-tight select-none">
+                        <a href="./" class="text-gray-950">Tyler</a>
+                    </div>
+                    <div class="flex gap-4">
+                        <a href="https://github.com/jmjuanes/tyler#api" class="font-medium text-gray-900 hover:text-gray-800 hover:underline">API</a>
+                        <a href="https://github.com/jmjuanes/tyler" class="font-medium text-gray-900 hover:text-gray-800 hover:underline">GitHub</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Hero section -->
+            <div class="mb-6 w-full pt-16 pb-10">
+                <div class="text-6xl font-bold font-plex-serif tracking-tight mb-3">
+                    <strong>Interactive Maps for the browser.</strong>
+                </div>
+                <div class="text-lg text-gray-800">
+                    <span>Easily create interactive maps with <b>Tyler</b>, an extremely lightweight JavaScript library with zero dependencies </span>
+                    <span>and crafted in under <u>300 lines of code</u>.</span>
+                </div>
+            </div>
+            <!-- Example section-->
+            <div class="">
+                <div class="text-sm text-gray-700 mb-2 text-center">Try it out:</div>
+                <div id="example" class="shadow-lg rounded-md overflow-hidden"></div>
+            </div>
+            <!-- Features section -->
+            <div class="w-full pt-20">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full">
+                    <div class="w-full"> 
+                        <div class="font-bold text-2xl mb-3">Simple and Lightweight</div>
+                        <div class=""><b>Tyler</b> is designed to be incredibly easy to use and maintain, with less than 300 lines of code. There are no external dependencies, making it a hassle-free choice for adding interactive maps to your projects.</div>
+                    </div>
+                    <div class="w-full">
+                        <div class="font-bold text-2xl mb-3">OpenStreetMap Integration</div>
+                        <div class="">By default, Tyler uses OpenStreetMap tiles for rendering your maps. This provides a reliable and free source of map data for your projects.</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Usage -->
+            <div class="hidden w-full pt-20">
+                <div class="text-4xl font-bold font-plex-serif tracking-tight mb-4">Usage</div>
+                <div class="mb-4">
+                    <span>You can include it in your project using one of the following methods. </span>
+                </div>
+                <div class="text-2xl font-bold font-plex-serif tracking-tight mb-4 mt-8">From a package manager</div>
+                <div class="mb-4">
+                    <span>You can add <b>Tyler</b> to your project using a package manager like NPM or Yarn:</span>
+                </div>
+                <div class="mb-4">
+                    <pre data-language="bash">## Install using npm:<br>$ npm install --save tylerjs<br><br>## Install using yarn:<br>$ yarn add tylerjs</pre>
+                </div>
+            </div>
+            <!-- Footer section -->
+            <div class="pb-16 pt-20 text-sm text-gray-700">
+                Crafted with love by <a href="https://josemi.xyz" class="font-medium text-gray-900 hover:underline">Josemi</a>.
+            </div>
+        </div>
+        <!-- Example code -->
+        <script type="module">
+            import * as Tyler from "./tyler.js";
+    
+            const parent = document.getElementById("example");
+            const defaultPosition = {
+                latitude: 39.469793732941206,
+                longitude: -0.37637608631442554,
+                zoom: 10,
+            };
+            const map = Tyler.create(parent, {
+                zoom: defaultPosition.zoom,
+                center: [defaultPosition.latitude, defaultPosition.longitude],
+            });
+        </script>
+        <!-- highlight examples -->
+        <script type="module">
+            // import {highlight} from "./codecake.js";
+            // const classList = "codecake-dark text-white p-4 rounded-md shadow-md overflow-x-auto";
+            // Array.from(document.querySelectorAll(`pre[data-language]`)).forEach(el => {
+            //     // Highlight the code of the element
+            //     const language = el.dataset.language;
+            //     if (language === "html" || language === "javascript") {
+            //         el.innerHTML = highlight(el.textContent, language);
+            //     }
+            //     // Add styles to pre element
+            //     classList.split(" ").forEach(css => {
+            //         el.classList.add(css);
+            //     });
+            // });
+        </script>
+    </body>
+</html>
