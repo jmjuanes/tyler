@@ -1,5 +1,5 @@
 {
-    "name": "tylerjs",
+    "name": "tyler-js",
     "version": "0.0.1",
     "type": "module",
     "description": "A tiny library for generating interactive maps in the browser",

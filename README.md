@@ -25,10 +25,10 @@ You can easily install Tyler using a package manager like npm or yarn. Just exec
 
 ```bash
 ## Install using NPM
-$ npm install --save tylerjs
+$ npm install --save tyler-js
 
 ## Or install using yarn
-$ yarn add tylerjs
+$ yarn add tyler-js
 ```
 
 ### Using Tyler from a CDN
@@ -38,14 +38,14 @@ If you prefer to use Tyler directly from a CDN like unpkg, you can do so by incl
 To include the CSS, add the following line in the `<head>` section of  your HTML file:
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/tylerjs@latest/tyler.css">
+<link rel="stylesheet" href="https://unpkg.com/tyler-js@latest/tyler.css">
 ```
 
 Create a new `<script type="module">` tag and import Tyler as a module:
 
 ```javascript
-<script tyle="module">
-    import * as Tyler from "https://unpkg.com/tylerjs@latest/tyler.js";
+<script type="module">
+    import * as Tyler from "https://unpkg.com/tyler-js@latest/tyler.js";
 
     // Map initialization...
 </script>
