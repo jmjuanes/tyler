@@ -1,0 +1,31 @@
+{
+    "name": "tylerjs",
+    "version": "0.0.0",
+    "type": "module",
+    "description": "A tiny library for generating interactive maps in the browser",
+    "repository": "https://github.com/jmjuanes/tyler",
+    "author": "Josemi Juanes <hello@josemi.xyz>",
+    "bugs": "https://github.com/jmjuanes/tyler/issues",
+    "main": "tyler.js",
+    "module": "tyler.js",
+    "exports": {
+        ".": "./tyler.js",
+        "./tyler.js": "./tyler.js",
+        "./tyler.css": "./tyler.css",
+        "./package.json": "./package.json"
+    },
+    "scripts": {
+        "serve": "serve ."
+    },
+    "files": [
+        "README.md",
+        "LICENSE",
+        "tyler.js",
+        "tyler.css"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "codecake": "^0.3.0",
+        "lowcss": "^0.17.1"
+    }
+}
