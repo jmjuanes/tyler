@@ -77,8 +77,10 @@ Creates an interactive map and appends it to the specified DOM element.
 #### Options
 
 - `center` (Array): An array specifying the initial geographic center of the map. The first element is the latitude, and the second element is the longitude. For example: `[51.505, -0.09]`.
-
-- `zoom` (Number, Default: `10`): The initial zoom level of the map. It determines the scale of the map's view.
+- `zoom` (Number, default `10`): The initial zoom level of the map. It determines the scale of the map's view.
+- `zooming` (Boolean, default `true`): display or hide zooming buttons in the map.
+- `minZoom` (Number, default `2`): minimum zooming value.
+- `maxZoom` (Number, default `18`): maximum zooming value.
 
 
 ## License
