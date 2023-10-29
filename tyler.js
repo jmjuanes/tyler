@@ -50,6 +50,10 @@ const getMapTemplate = () => {
         `<div class="tyler">`,
         `    <canvas class="tyler-canvas" width="0" height="0"></canvas>`,
         `    <div class="tyler-attribution"></div>`,
+        `    <div class="tyler-zooming" style="display:none;">`,
+        `        <div class="tyler-zooming-button zoom-in">+</div>`,
+        `        <div class="tyler-zooming-button zoom-out">-</div>`,
+        `    </div>`,
         `</div>`,
     ];
     const templateElement = document.createElement("template");
@@ -63,9 +67,13 @@ export const create = (parent, options = {}) => {
     const tileHeight = options?.tileHeight || 256;
     const tileUrl = options?.tileUrl || "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
     const attribution = options?.attribution || `&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors`;
-    const minZoom = 2;
-    const maxZoom = 18;
-    const zoom = clamp(options?.zoom ?? 10, minZoom, maxZoom);
+    const minZoom = options?.minZoom ?? 2;
+    const maxZoom = options?.maxZoom ?? 18;
+    const zooming = options?.zooming ?? true;
+    const state = {
+        ready: false,
+        zoom: clamp(options?.zoom ?? 10, minZoom, maxZoom),
+    };
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
     parent.querySelector(".tyler").style.height = options?.height || "400px";
@@ -88,7 +96,7 @@ export const create = (parent, options = {}) => {
         const xRange = [-parseInt(Math.floor(tilesX / 2)), parseInt(Math.ceil(tilesX / 2))];
         const yRange = [-parseInt(Math.floor(tilesY / 2)), parseInt(Math.ceil(tilesY / 2))];
 
-        const [xAbsolute, yAbsolute] = latlon2xy(center[0], center[1], zoom);
+        const [xAbsolute, yAbsolute] = latlon2xy(center[0], center[1], state.zoom);
         const xOffset = ((tilesX * tileWidth) - width) / 2;
         const yOffset = ((tilesY * tileHeight) - height) / 2;
 
@@ -106,7 +114,7 @@ export const create = (parent, options = {}) => {
         // Render tiles
         const firstTile = tiles[0];
         await Promise.all(tiles.map(tile => {
-            const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], zoom);
+            const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], state.zoom);
             return loadImageAsync(imageUrl).then(image => {
                 const imageX = ((tile[0] - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
                 const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
@@ -114,7 +122,26 @@ export const create = (parent, options = {}) => {
             });
         }));
 
+        // Render finished
+        state.ready = true;
     };
+
+    // Enable zooming
+    if (zooming) {
+        const changeZoom = newZoom => {
+            state.zoom = clamp(newZoom, minZoom, maxZoom);
+            state.ready = false;
+            render(options?.center ?? [10, 10]);
+        };
+        const zoomingElement = parent.querySelector(".tyler-zooming");
+        zoomingElement.style.display = "";
+        zoomingElement.querySelector(".zoom-in").addEventListener("click", () => {
+            return state.ready && changeZoom(state.zoom + 1);
+        });
+        zoomingElement.querySelector(".zoom-out").addEventListener("click", () => {
+            return state.ready && changeZoom(state.zoom - 1);
+        });
+    }
 
     resize();
     render(options?.center ?? [10, 10]);
