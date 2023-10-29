@@ -1,3 +1,8 @@
+/* Global variables */
+:root {
+    --tyler-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.5);
+}
+
 /* Main container */
 .tyler {
     display: block;
@@ -21,4 +26,34 @@
 }
 .tyler-attribution > a {
     color: #006188;
+}
+
+/* Zooming */
+.tyler-zooming {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: var(--tyler-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    left: 1rem;
+    padding: 0.25rem;
+    position: absolute;
+    top: 1rem;
+    /* width: 2rem; */
+}
+.tyler-zooming-button {
+    align-items: center;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: flex;
+    font-size: 1.25rem;
+    font-weight: bold;
+    height: 1.75rem;
+    justify-content: center;
+    user-select: none;
+    width: 1.75rem;
+}
+.tyler-zooming-button:hover {
+    background-color: #f5f5f5;
 }
