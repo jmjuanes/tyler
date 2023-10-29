@@ -67,8 +67,8 @@ export const create = (parent, options = {}) => {
     const tileHeight = options?.tileHeight || 256;
     const tileUrl = options?.tileUrl || "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
     const attribution = options?.attribution || `&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors`;
-    const minZoom = 2;
-    const maxZoom = 18;
+    const minZoom = options?.minZoom ?? 2;
+    const maxZoom = options?.maxZoom ?? 18;
     const zooming = options?.zooming ?? true;
     const state = {
         ready: false,
