@@ -8,9 +8,9 @@
 
 - **OpenStreetMap Integration**: By default, Tyler uses OpenStreetMap tiles for rendering your maps. This provides a reliable and free source of map data for your projects.
 
-- **Multiple Markers (Future)**: Easily add multiple markers to your map to pinpoint specific locations of interest.
+- **Zooming**: Tyler supports zoom in and out on the map for a more detailed view.
 
-- **Zooming Support (Future)**: In upcoming versions, we plan to introduce zooming support, allowing users to zoom in and out on the map for a more detailed view.
+- **Multiple Markers (Future)**: Easily add multiple markers to your map to pinpoint specific locations of interest.
 
 - **Pan and Move (Future)**: We're also working on adding the ability to pan and move around the map, giving users the flexibility to explore different areas.
 
@@ -81,7 +81,6 @@ Creates an interactive map and appends it to the specified DOM element.
 - `zooming` (Boolean, default `true`): display or hide zooming buttons in the map.
 - `minZoom` (Number, default `2`): minimum zooming value.
 - `maxZoom` (Number, default `18`): maximum zooming value.
-
 
 ## License
 
