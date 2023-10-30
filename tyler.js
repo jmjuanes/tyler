@@ -45,6 +45,15 @@ const loadImageAsync = imageUrl => {
     });
 };
 
+const getMarkerImage = color => {
+    if (typeof getMarkerImage[color] !== "undefined") {
+        return getMarkerImage[color];
+    }
+    // Generate the marker image for the given color
+    const svg = [
+    ];
+};
+
 const getMapTemplate = () => {
     const templateContent = [
         `<div class="tyler">`,
@@ -73,12 +82,13 @@ export const create = (parent, options = {}) => {
     const state = {
         ready: false,
         zoom: clamp(options?.zoom ?? 10, minZoom, maxZoom),
+        marks: Array.isArray(options?.marks) ? options.marks : [],
     };
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
     parent.querySelector(".tyler").style.height = options?.height || "400px";
     parent.querySelector(".tyler-attribution").innerHTML = attribution;
-    const canvas = parent.querySelector("canvas");
+    const canvas = parent.querySelector(`canvas`);
 
     const resize = () => {
         const {width, height} = canvas.parentElement.getBoundingClientRect();
@@ -120,6 +130,17 @@ export const create = (parent, options = {}) => {
                 const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
                 context.drawImage(image, imageX, imageY, tileWidth, tileHeight);
             });
+        }));
+
+        // Render marks
+        await Promise.all(state.marks.map(async mark => {
+            const [x, y] = latlon2xy(mark.position[0], mark.position[1], state.zoom);
+            const centerX = ((x - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
+            const centerY = ((y - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
+            context.beginPath();
+            context.arc(centerX, centerY, 5, 0, 2 * Math.PI, false);
+            context.fillStyle = "green";
+            context.fill();
         }));
 
         // Render finished

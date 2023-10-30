@@ -95,6 +95,9 @@
             const map = Tyler.create(parent, {
                 zoom: defaultPosition.zoom,
                 center: [defaultPosition.latitude, defaultPosition.longitude],
+                marks: [
+                    Tyler.marker([defaultPosition.latitude, defaultPosition.longitude], "Valencia"),
+                ],
             });
         </script>
         <!-- highlight examples -->

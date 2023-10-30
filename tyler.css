@@ -23,6 +23,7 @@
     padding: 0.25rem 0.5rem;
     position: absolute;
     right: 0px;
+    z-index: 2;
 }
 .tyler-attribution > a {
     color: #006188;
