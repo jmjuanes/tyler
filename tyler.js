@@ -6,9 +6,6 @@ const clamp = (value, minValue, maxValue) => {
     return Math.min(maxValue, Math.max(minValue, value));
 };
 
-// Calculate the number of tiles for the given zoom level
-const numTiles = z => Math.pow(2, z);
-
 const lon2tile = lon => {
     return (lon + 180) / 360;
 };
@@ -16,11 +13,6 @@ const lon2tile = lon => {
 const lat2tile = lat => {
     const radians = lat * Math.PI / 180;
     return (1 - Math.log(Math.tan(radians) + 1 / Math.cos(radians)) / Math.PI) / 2;
-};
-
-const latlon2xy = (lat, lon, z) => {
-    const n = numTiles(z);
-    return [n*lon2tile(lon), n*lat2tile(lat)];
 };
 
 const getTileUrl = (url, x, y, z) => {
@@ -95,24 +87,26 @@ export const create = (parent, options = {}) => {
     const minZoom = options?.minZoom ?? 2;
     const maxZoom = options?.maxZoom ?? 18;
     const zooming = options?.zooming ?? true;
-    const marks = Array.isArray(options?.marks) ? options.marks : [];
     const state = {
         ready: false,
+        x: lon2tile(options?.center?.[1] ?? 0),
+        y: lat2tile(options?.center?.[0] ?? 0),
         zoom: clamp(options?.zoom ?? 10, minZoom, maxZoom),
+        marks: Array.isArray(options?.marks) ? options.marks : [],
     };
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
     parent.querySelector(".tyler").style.height = options?.height || "400px";
     parent.querySelector(".tyler-attribution").innerHTML = attribution;
     const canvas = parent.querySelector(`canvas`);
-
     const resize = () => {
-        const {width, height} = canvas.parentElement.getBoundingClientRect();
-        canvas.width = width;
-        canvas.height = height;
+        const size = canvas.parentElement.getBoundingClientRect();
+        canvas.width = size.width;
+        canvas.height = size.height;
     };
-
-    const render = async (center) => {
+    const render = async () => {
+        const numTiles = Math.pow(2, state.zoom);
+        const xAbsolute = state.x * numTiles, yAbsolute = state.y * numTiles;
         const {width, height} = canvas;
         const context = canvas.getContext("2d");
 
@@ -122,7 +116,6 @@ export const create = (parent, options = {}) => {
         const xRange = [-parseInt(Math.floor(tilesX / 2)), parseInt(Math.ceil(tilesX / 2))];
         const yRange = [-parseInt(Math.floor(tilesY / 2)), parseInt(Math.ceil(tilesY / 2))];
 
-        const [xAbsolute, yAbsolute] = latlon2xy(center[0], center[1], state.zoom);
         const xOffset = ((tilesX * tileWidth) - width) / 2;
         const yOffset = ((tilesY * tileHeight) - height) / 2;
 
@@ -138,19 +131,14 @@ export const create = (parent, options = {}) => {
         }
 
         // Render marks
-        marks.forEach((mark, index) => {
-            const [x, y] = latlon2xy(mark.position[0], mark.position[1], state.zoom);
+        state.marks.forEach((mark, index) => {
+            const x = lon2tile(mark.position[1]) * numTiles, y = lat2tile(mark.position[0]) * numTiles;
             const centerX = ((x - tiles[0][0]) * tileWidth) - xOffset - xCenterDiff;
             const centerY = ((y - tiles[0][1]) * tileHeight) - yOffset - yCenterDiff;
             const markImage = document.querySelector(`img[data-role="marker"][data-index="${index}"]`);
-            if (0 < centerX && centerX < width && 0 < centerY && centerY < height) {
-                markImage.style.display = "";
-                markImage.style.top = `${centerY}px`;
-                markImage.style.left = `${centerX}px`;
-            }
-            else {
-                markImage.style.display = "none";
-            }
+            markImage.setAttribute("data-visible", (0 < centerX && centerX < width && 0 < centerY && centerY < height) ? "true" : "false");
+            markImage.style.top = `${clamp(centerY, 0, height)}px`;
+            markImage.style.left = `${clamp(centerX, 0, width)}px`;
         });
 
         // Render tiles
@@ -166,7 +154,6 @@ export const create = (parent, options = {}) => {
         // Render finished
         state.ready = true;
     };
-
     // Enable zooming
     if (zooming) {
         const changeZoom = newZoom => {
@@ -183,18 +170,18 @@ export const create = (parent, options = {}) => {
             return state.ready && changeZoom(state.zoom - 1);
         });
     }
-
     // Render marks
-    marks.forEach((mark, index) => {
+    state.marks.forEach((mark, index) => {
         const markImage = getMarkerImage();
-        markImage.style.display = "none"; // By default we would need to hide this image
         markImage.setAttribute("data-role", "marker");
         markImage.setAttribute("data-index", index);
+        markImage.setAttribute("data-latitude", mark.position[0]);
+        markImage.setAttribute("data-longitude", mark.position[1]);
+        markImage.setAttribute("data-visible", "false");
         parent.querySelector(".tyler-marks").appendChild(markImage);
     });
-
     resize();
-    render(options?.center ?? [10, 10]);
+    render();
 
     return {};
 };

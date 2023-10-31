@@ -26,6 +26,9 @@
     position: absolute;
     transform: translateX(-50%) translateY(-100%);
 }
+.tyler-marks > img[data-visible="false"] {
+    display: none !important;
+}
 
 /* Attribution block */
 .tyler-attribution {
