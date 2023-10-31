@@ -122,35 +122,29 @@ export const create = (parent, options = {}) => {
         const xCenterDiff = (xAbsolute - parseInt(xAbsolute)) * tileWidth;
         const yCenterDiff = (yAbsolute - parseInt(yAbsolute)) * tileHeight;
 
-        // Generate tiles list
-        const tiles = [];
-        for (let y = yRange[0]; y < yRange[1]; y++) {
-            for (let x = xRange[0]; x < xRange[1]; x++) {
-                tiles.push([parseInt(xAbsolute) + x, parseInt(yAbsolute) + y]);
-            }
-        }
-
+        // We need first tile to place the other tiles in the correct position
+        const firstTile = [parseInt(xAbsolute) + xRange[0], parseInt(yAbsolute) + yRange[0]];
         // Render marks
         state.marks.forEach((mark, index) => {
             const x = lon2tile(mark.position[1]) * numTiles, y = lat2tile(mark.position[0]) * numTiles;
-            const centerX = ((x - tiles[0][0]) * tileWidth) - xOffset - xCenterDiff;
-            const centerY = ((y - tiles[0][1]) * tileHeight) - yOffset - yCenterDiff;
+            const centerX = ((x - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
+            const centerY = ((y - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
             const markImage = document.querySelector(`img[data-role="marker"][data-index="${index}"]`);
             markImage.setAttribute("data-visible", (0 < centerX && centerX < width && 0 < centerY && centerY < height) ? "true" : "false");
             markImage.style.top = `${clamp(centerY, 0, height)}px`;
             markImage.style.left = `${clamp(centerX, 0, width)}px`;
         });
-
         // Render tiles
-        await Promise.all(tiles.map(tile => {
-            const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], state.zoom);
-            return loadImageAsync(imageUrl).then(image => {
-                const imageX = ((tile[0] - tiles[0][0]) * tileWidth) - xOffset - xCenterDiff;
-                const imageY = ((tile[1] - tiles[0][1]) * tileHeight) - yOffset - yCenterDiff;
+        for (let y = yRange[0]; y < yRange[1]; y++) {
+            for (let x = xRange[0]; x < xRange[1]; x++) {
+                const tile = [parseInt(xAbsolute) + x, parseInt(yAbsolute) + y];
+                const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], state.zoom);
+                const image = await loadImageAsync(imageUrl);
+                const imageX = ((tile[0] - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
+                const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
                 context.drawImage(image, imageX, imageY, tileWidth, tileHeight);
-            });
-        }));
-
+            }
+        }
         // Render finished
         state.ready = true;
     };
