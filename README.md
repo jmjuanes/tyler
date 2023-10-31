@@ -10,7 +10,7 @@
 
 - **Zooming**: Tyler supports zoom in and out on the map for a more detailed view.
 
-- **Multiple Markers (Future)**: Easily add multiple markers to your map to pinpoint specific locations of interest.
+- **Multiple Markers**: Easily add multiple markers to your map to pinpoint specific locations of interest.
 
 - **Pan and Move (Future)**: We're also working on adding the ability to pan and move around the map, giving users the flexibility to explore different areas.
 
@@ -61,6 +61,9 @@ const parent = document.getElementById("root");
 const map = Tyler.create(parent, {
     center: [39.4698, -0.3764],
     zoom: 10,
+    marks: [
+        Tyler.marker([51.505, -0.09]),
+    ],
 });
 ```
 
@@ -71,19 +74,23 @@ const map = Tyler.create(parent, {
 Creates an interactive map and appends it to the specified DOM element.
 
 - `parent` (DOM Element): The DOM element where the map will be placed.
-
-- `options` (Object): An object containing the configuration options for the map.
+- `options` (Object, default `{}`): An object containing the configuration options for the map.
 
 #### Options
 
-- `center` (Array): An array specifying the initial geographic center of the map. The first element is the latitude, and the second element is the longitude. For example: `[51.505, -0.09]`.
-- `zoom` (Number, default `10`): The initial zoom level of the map. It determines the scale of the map's view.
+- `center` (Array): an array specifying the initial geographic center of the map. The first element is the latitude, and the second element is the longitude. For example: `[51.505, -0.09]`.
+- `zoom` (Number, default `10`): the initial zoom level of the map. It determines the scale of the map's view.
 - `zooming` (Boolean, default `true`): display or hide zooming buttons in the map.
 - `minZoom` (Number, default `2`): minimum zooming value.
 - `maxZoom` (Number, default `18`): maximum zooming value.
+- `marks` (Array, default `[]`): a list of marks to add into the map. Use `Tyler.marker` function to generate marks objects.
+
+### Tyler.marker(position)
+
+A utility function that creates a new marker object. Accepts the following arguments:
+
+- `position` (Array): An array specifying the geographic position of the marker. The first element is the latitude, and the second element is the longitude. For example: `[51.505, -0.09]`.
 
 ## License
 
-Tyler is licensed under the [MIT License](./LICENSE), so you're free to use it in your projects, commercial or personal.
-
-
+Tyler is licensed under the [MIT License](./LICENSE), so you are free to use it in your projects, commercial or personal.
