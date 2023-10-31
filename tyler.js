@@ -45,19 +45,35 @@ const loadImageAsync = imageUrl => {
     });
 };
 
-const getMarkerImage = color => {
-    if (typeof getMarkerImage[color] !== "undefined") {
-        return getMarkerImage[color];
-    }
-    // Generate the marker image for the given color
+const markerColors = {
+    default: ["#35889E", "#3BB2D0"],
+};
+
+const getMarkerImage = (color = "default", size = 48) => {
+    const c = markerColors[color];
+    const image = document.createElement("img");
     const svg = [
-    ];
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">`,
+        `<g strokeLinecap="round" strokeLinejoin="round" strokeWidth="1">`,
+        `<path fill="${c[1]}" stroke="${c[0]}" d="M12 3C5 3 5 10 5 10C5 16 12 21 12 21C12 21 19 16 19 10C19 10 19 3 12 3Z" />`,
+        `<path fill="#fff" stroke="${c[0]}" d="M9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10Z" />`,
+        `</g>`,
+        `</svg>`,
+    ].join("");
+    const svgBlob = new Blob([svg], {
+        type: "image/svg+xml;charset=utf-8",
+    });
+    image.src = (window.URL || window.webkitURL || window).createObjectURL(svgBlob);
+    image.setAttribute("width", `${size}px`);
+    image.setAttribute("height", `${size}px`);
+    return image;
 };
 
 const getMapTemplate = () => {
     const templateContent = [
         `<div class="tyler">`,
         `    <canvas class="tyler-canvas" width="0" height="0"></canvas>`,
+        `    <div class="tyler-marks"></div>`,
         `    <div class="tyler-attribution"></div>`,
         `    <div class="tyler-zooming" style="display:none;">`,
         `        <div class="tyler-zooming-button zoom-in">+</div>`,
@@ -79,10 +95,10 @@ export const create = (parent, options = {}) => {
     const minZoom = options?.minZoom ?? 2;
     const maxZoom = options?.maxZoom ?? 18;
     const zooming = options?.zooming ?? true;
+    const marks = Array.isArray(options?.marks) ? options.marks : [];
     const state = {
         ready: false,
         zoom: clamp(options?.zoom ?? 10, minZoom, maxZoom),
-        marks: Array.isArray(options?.marks) ? options.marks : [],
     };
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
@@ -110,8 +126,8 @@ export const create = (parent, options = {}) => {
         const xOffset = ((tilesX * tileWidth) - width) / 2;
         const yOffset = ((tilesY * tileHeight) - height) / 2;
 
-        const xCenterDiff = parseInt((xAbsolute - parseInt(xAbsolute)) * tileWidth);
-        const yCenterDiff = parseInt((yAbsolute - parseInt(yAbsolute)) * tileHeight);
+        const xCenterDiff = (xAbsolute - parseInt(xAbsolute)) * tileWidth;
+        const yCenterDiff = (yAbsolute - parseInt(yAbsolute)) * tileHeight;
 
         // Generate tiles list
         const tiles = [];
@@ -121,26 +137,30 @@ export const create = (parent, options = {}) => {
             }
         }
 
+        // Render marks
+        marks.forEach((mark, index) => {
+            const [x, y] = latlon2xy(mark.position[0], mark.position[1], state.zoom);
+            const centerX = ((x - tiles[0][0]) * tileWidth) - xOffset - xCenterDiff;
+            const centerY = ((y - tiles[0][1]) * tileHeight) - yOffset - yCenterDiff;
+            const markImage = document.querySelector(`img[data-role="marker"][data-index="${index}"]`);
+            if (0 < centerX && centerX < width && 0 < centerY && centerY < height) {
+                markImage.style.display = "";
+                markImage.style.top = `${centerY}px`;
+                markImage.style.left = `${centerX}px`;
+            }
+            else {
+                markImage.style.display = "none";
+            }
+        });
+
         // Render tiles
-        const firstTile = tiles[0];
         await Promise.all(tiles.map(tile => {
             const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], state.zoom);
             return loadImageAsync(imageUrl).then(image => {
-                const imageX = ((tile[0] - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
-                const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
+                const imageX = ((tile[0] - tiles[0][0]) * tileWidth) - xOffset - xCenterDiff;
+                const imageY = ((tile[1] - tiles[0][1]) * tileHeight) - yOffset - yCenterDiff;
                 context.drawImage(image, imageX, imageY, tileWidth, tileHeight);
             });
-        }));
-
-        // Render marks
-        await Promise.all(state.marks.map(async mark => {
-            const [x, y] = latlon2xy(mark.position[0], mark.position[1], state.zoom);
-            const centerX = ((x - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
-            const centerY = ((y - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
-            context.beginPath();
-            context.arc(centerX, centerY, 5, 0, 2 * Math.PI, false);
-            context.fillStyle = "green";
-            context.fill();
         }));
 
         // Render finished
@@ -163,6 +183,15 @@ export const create = (parent, options = {}) => {
             return state.ready && changeZoom(state.zoom - 1);
         });
     }
+
+    // Render marks
+    marks.forEach((mark, index) => {
+        const markImage = getMarkerImage();
+        markImage.style.display = "none"; // By default we would need to hide this image
+        markImage.setAttribute("data-role", "marker");
+        markImage.setAttribute("data-index", index);
+        parent.querySelector(".tyler-marks").appendChild(markImage);
+    });
 
     resize();
     render(options?.center ?? [10, 10]);
