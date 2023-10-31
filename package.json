@@ -1,6 +1,6 @@
 {
     "name": "tyler-js",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "type": "module",
     "description": "A tiny library for generating interactive maps in the browser",
     "repository": "https://github.com/jmjuanes/tyler",
