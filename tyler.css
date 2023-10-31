@@ -47,6 +47,9 @@
 .tyler-attribution > a {
     color: #006188;
 }
+.tyler-attribution > a:hover {
+    text-decoration: underline;
+}
 
 /* Zooming */
 .tyler-zooming {

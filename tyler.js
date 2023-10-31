@@ -97,7 +97,7 @@ export const create = (parent, options = {}) => {
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
     parent.querySelector(".tyler").style.height = options?.height || "400px";
-    parent.querySelector(".tyler-attribution").innerHTML = attribution;
+    parent.querySelector(".tyler-attribution").innerHTML = `<a href="https://josemi.xyz/tyler" target="_blank">Tyler</a> | ` + attribution;
     const canvas = parent.querySelector(`canvas`);
     const resize = () => {
         const size = canvas.parentElement.getBoundingClientRect();
