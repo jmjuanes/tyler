@@ -7,8 +7,27 @@
 .tyler {
     display: block;
     font-size: 16px;
+    overflow: hidden;
     position: relative;
     user-select: none;
+}
+
+/* Marks */
+.tyler-marks {
+    height: 100%;
+    left: 0px;
+    pointer-events: none;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 5;
+}
+.tyler-marks > img {
+    position: absolute;
+    transform: translateX(-50%) translateY(-100%);
+}
+.tyler-marks > img[data-visible="false"] {
+    display: none !important;
 }
 
 /* Attribution block */
@@ -23,6 +42,7 @@
     padding: 0.25rem 0.5rem;
     position: absolute;
     right: 0px;
+    z-index: 2;
 }
 .tyler-attribution > a {
     color: #006188;
