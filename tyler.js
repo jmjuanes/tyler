@@ -1,6 +1,9 @@
 // Convert to the nearest even number
 const toEven = x => 2 * Math.round(x / 2);
 
+// Modulo of a number
+const mod = (n, m) => ((n % m) + m) % m;
+
 // Clamp number
 const clamp = (value, minValue, maxValue) => {
     return Math.min(maxValue, Math.max(minValue, value));
@@ -84,7 +87,7 @@ export const create = (parent, options = {}) => {
     const tileHeight = options?.tileHeight || 256;
     const tileUrl = options?.tileUrl || "http://[abc].tile.openstreetmap.org/{z}/{x}/{y}.png";
     const attribution = options?.attribution || `&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors`;
-    const minZoom = options?.minZoom ?? 2;
+    const minZoom = options?.minZoom ?? 1;
     const maxZoom = options?.maxZoom ?? 18;
     const zooming = options?.zooming ?? true;
     const state = {
@@ -138,7 +141,7 @@ export const create = (parent, options = {}) => {
         for (let y = yRange[0]; y < yRange[1]; y++) {
             for (let x = xRange[0]; x < xRange[1]; x++) {
                 const tile = [parseInt(xAbsolute) + x, parseInt(yAbsolute) + y];
-                const imageUrl = getTileUrl(tileUrl, tile[0], tile[1], state.zoom);
+                const imageUrl = getTileUrl(tileUrl, mod(tile[0], numTiles), mod(tile[1], numTiles), state.zoom);
                 const image = await loadImageAsync(imageUrl);
                 const imageX = ((tile[0] - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
                 const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
