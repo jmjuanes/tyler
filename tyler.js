@@ -1,7 +1,7 @@
 // Convert to the nearest even number
 const toEven = x => 2 * Math.round(x / 2);
 
-// Modulo of a number
+// Modulo
 const mod = (n, m) => ((n % m) + m) % m;
 
 // Clamp number
@@ -96,12 +96,21 @@ export const create = (parent, options = {}) => {
         y: lat2tile(options?.center?.[0] ?? 0),
         zoom: clamp(options?.zoom ?? 10, minZoom, maxZoom),
         marks: Array.isArray(options?.marks) ? options.marks : [],
+        cache: {},
     };
     parent.appendChild(getMapTemplate());
     parent.querySelector(".tyler").style.width = options?.width || "100%";
     parent.querySelector(".tyler").style.height = options?.height || "400px";
     parent.querySelector(".tyler-attribution").innerHTML = `<a href="https://josemi.xyz/tyler" target="_blank">Tyler</a> | ` + attribution;
     const canvas = parent.querySelector(`canvas`);
+    const getTile = async (x, y) => {
+        const id = `${x}-${y}`;
+        // check for requesting image
+        if (typeof state.cache[id] === "undefined") {
+            state.cache[id] = await loadImageAsync(getTileUrl(tileUrl, x, y, state.zoom));
+        }
+        return state.cache[id];
+    };
     const resize = () => {
         const size = canvas.parentElement.getBoundingClientRect();
         canvas.width = size.width;
@@ -141,8 +150,7 @@ export const create = (parent, options = {}) => {
         for (let y = yRange[0]; y < yRange[1]; y++) {
             for (let x = xRange[0]; x < xRange[1]; x++) {
                 const tile = [parseInt(xAbsolute) + x, parseInt(yAbsolute) + y];
-                const imageUrl = getTileUrl(tileUrl, mod(tile[0], numTiles), mod(tile[1], numTiles), state.zoom);
-                const image = await loadImageAsync(imageUrl);
+                const image = await getTile(mod(tile[0], numTiles), mod(tile[1], numTiles));
                 const imageX = ((tile[0] - firstTile[0]) * tileWidth) - xOffset - xCenterDiff;
                 const imageY = ((tile[1] - firstTile[1]) * tileHeight) - yOffset - yCenterDiff;
                 context.drawImage(image, imageX, imageY, tileWidth, tileHeight);
@@ -155,8 +163,9 @@ export const create = (parent, options = {}) => {
     if (zooming) {
         const changeZoom = newZoom => {
             state.zoom = clamp(newZoom, minZoom, maxZoom);
+            state.cache = {}; // Reset cache
             state.ready = false;
-            render(options?.center ?? [10, 10]);
+            render();
         };
         const zoomingElement = parent.querySelector(".tyler-zooming");
         zoomingElement.style.display = "";
